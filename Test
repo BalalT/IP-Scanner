@@ -1,0 +1,42 @@
+password = ("Balal12345")
+masked_psswd = "*" * len(password)
+print(masked_psswd)
+print("\n")
+
+text = "cybersecurity"
+print(text[0:])
+
+print("\n")
+
+textfile = "cmdioe.exe"
+if textfile[-4] == ".exe":
+    print("Malwarefound")
+
+print("\n")
+
+word = "Happy Days"
+another = word.split()
+print(another)
+
+cardnumb = "09876543210987654321"
+masked_num = "*" * (len(cardnumb) -6 ) + cardnumb[-6:]
+print("Masked:", masked_num)
+print("\n")
+
+cmd = "commandlinE"
+print(cmd.upper())
+print(cmd.lower())
+
+psswd = "   trashcan     "
+print(psswd.strip())
+
+my_name = "My name is bil"
+myrealname = my_name.replace("bil", "Balal")
+print(myrealname)
+
+email = "tahirkheagmail.com"
+if email.find("@") != -1:
+    print("valid email")
+else:
+    print("enter a valid Email")
+

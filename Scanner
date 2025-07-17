@@ -1,0 +1,65 @@
+import sys
+import socket
+from datetime import datetime
+import threading
+
+# Attempt connection to specific port on target host
+def probe_port(host, port_num):
+    try:
+        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn.settimeout(1)
+        status = conn.connect_ex((host, port_num))  # Returns 0 if the connection is successful (i.e., port is open)
+        if status == 0:
+            print(f"Port {port_num} is open")
+        conn.close()
+    except socket.error as err:
+        print(f"Connection error on port {port_num}: {err}")
+    except Exception as exc:
+        print(f"Unexpected issue on port {port_num}: {exc}")
+
+# Entry point - handles input and initiates scanning process
+def run_scan():
+    if len(sys.argv) == 2:
+        hostname = sys.argv[1]
+    else:
+        print("Incorrect argument count.")
+        print("Usage: python scanner.py <hostname_or_ip>")
+        sys.exit(1)
+
+    # Convert hostname to IP address
+    try:
+        resolved_ip = socket.gethostbyname(hostname)
+    except socket.gaierror:
+        print(f"Failed to resolve hostname: {hostname}")
+        sys.exit(1)
+
+    # Display header information
+    print("=" * 60)
+    print(f"Beginning scan on: {resolved_ip}")
+    print(f"Timestamp: {datetime.now()}")
+    print("=" * 60)
+
+    try:
+        # Launch scanning threads for all ports in parallel
+        job_list = []
+        for port_id in range(1, 65536):
+            worker = threading.Thread(target=probe_port, args=(resolved_ip, port_id))
+            job_list.append(worker)
+            worker.start()
+
+        # Wait until all threads are finished
+        for job in job_list:
+            job.join()
+
+    except KeyboardInterrupt:
+        print("\nUser interrupted. Terminating scan.")
+        sys.exit(0)
+
+    except socket.error as sock_err:
+        print(f"Network-related error: {sock_err}")
+        sys.exit(1)
+
+    print("\nScan finished successfully!")
+
+if __name__ == "__main__":
+    run_scan()
